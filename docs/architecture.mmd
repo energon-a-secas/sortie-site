@@ -1,0 +1,56 @@
+---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#0f172a"
+    primaryTextColor: "#e2e8f0"
+    primaryBorderColor: "#0063e5"
+    lineColor: "#38bdf8"
+    secondaryColor: "#1e293b"
+    tertiaryColor: "#1e293b"
+    clusterBkg: "#f0f7ff"
+    clusterBorder: "#bfdbfe"
+    edgeLabelBackground: "#e8f0ff"
+    mainBkg: "#0f172a"
+    nodeBorder: "#0063e5"
+    titleColor: "#1e1b4b"
+    fontFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif"
+    fontSize: "13px"
+---
+flowchart TB
+    User([User]) --> HTML["index.html\nLock screen, console, forge, overlays"]
+
+    subgraph App["ES Modules"]
+        HTML --> app["app.js\nEntry point"]
+        app --> state["state.js\nLoadout, custom parts, settings"]
+        app --> boot["boot.js\nDevice ID gate + handshake"]
+        app --> render["render.js\nScreen routing + readouts"]
+        app --> events["events.js\nWiring + shortcuts"]
+
+        render --> matrix["matrix.js\nTile placement, traces, grid nav"]
+        render --> cards["cards.js\nPart cards + stat bars"]
+        render --> hud["hud.js\nSix numbered section panels"]
+        render --> modes["modes.js\nBurst palettes + multipliers"]
+
+        matrix --> layout["layout.js\nSlot positions, Flight and Siege forms"]
+        state --> parts["parts.js\nAC6 slots, 76-part catalog, budgets"]
+        parts --> glyphs["glyphs.js\n4-level glyph codec + auto-shader"]
+
+        events --> transform["transform.js\nFolding between forms"]
+        transform --> layout
+
+        events --> forge["forge.js\nGlyph painter + part CRUD"]
+        events --> panel["panel.js\nAccent, layout, FX, motion"]
+        events --> poster["poster.js\nCanvas poster export"]
+        events --> fx["fx.js\nParticle field + attract loop"]
+
+        panel --> theme["theme.js\nAccent + contrast derivation"]
+        modes --> theme
+        forge --> parts
+        poster --> layout
+        fx --> audio["audio.js\nSynthesized blips"]
+    end
+
+    state <-->|"sortie-state"| Storage[("localStorage")]
+    share["share.js\nFrame codec"] <-->|"#f= base64url"| URL[("URL hash")]
+    state <--> share
