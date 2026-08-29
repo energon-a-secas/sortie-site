@@ -1,4 +1,4 @@
-# Sortie — product one-pager
+# Sortie: product one-pager
 
 **What it is:** Boot a mech console, forge parts, fire burst modes
 
