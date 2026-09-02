@@ -37,26 +37,13 @@ export function resolveMotion(setting) {
 const FX_KEYS = ['scanlines', 'bloom', 'aberration', 'curve'];
 
 /**
- * Show or hide the header bar.
- *
- * Done with an inline style rather than a stylesheet rule, because the fleet
- * forbids site-local header CSS and the kit's own `.header-hidden` class is
- * owned by its scroll handler, which would put the bar back on the next scroll
- * up. An inline display beats both and leaves the kit's rules untouched.
+ * Mirror the settings object onto <body> data-attributes for the CSS to read.
+ * The chrome (header/footer) toggle is NOT here any more: the NeoKeys kit
+ * owns H, the html[data-chrome] state and the neo_chrome cookie.
  */
-export function applyChrome(on) {
-  for (const sel of ['.header-bar', '.neo-footer']) {
-    const el = document.querySelector(sel);
-    if (el) el.style.display = on ? '' : 'none';
-  }
-  document.body.dataset.chrome = on ? 'on' : 'off';
-}
-
-/** Mirror the settings object onto <body> data-attributes for the CSS to read. */
 export function applyFx(settings) {
   const b = document.body;
   for (const key of FX_KEYS) b.dataset[key] = settings[key] ? 'on' : 'off';
-  applyChrome(settings.chrome !== false);
   if (!settings.motion || settings.motion === 'auto') delete b.dataset.motion;
   else b.dataset.motion = settings.motion;
 }

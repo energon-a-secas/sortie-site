@@ -21,8 +21,9 @@
   height: clamp(320px, calc(100dvh - 250px), 640px);
 }
 
-/* With the header hidden the frame takes the height back. */
-body[data-chrome='off'] .matrix__stage {
+/* With the header hidden the frame takes the height back. The attribute is
+   the NeoKeys kit's, written on <html> so its pre-paint guard can set it. */
+html[data-chrome='off'] .matrix__stage {
   height: clamp(320px, calc(100dvh - 190px), 720px);
 }
 

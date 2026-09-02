@@ -11,7 +11,7 @@ import { openModal, closeModal, openModalId } from './modal.js';
 import { openOverlay, activate } from './modes.js';
 import { cycleForm } from './transform.js';
 import { submitCode, relock, armHint } from './boot.js';
-import { openPanel, closePanel, isPanelOpen, togglePanel, toggleChrome } from './panel.js';
+import { openPanel, closePanel, isPanelOpen, togglePanel } from './panel.js';
 import { copyShareLink } from './share.js';
 import { savePoster } from './poster.js';
 import { nudge } from './fx.js';
@@ -59,7 +59,6 @@ const SHORTCUTS = {
   f: () => goForge(),
   m: () => openOverlay(),
   o: () => togglePanel(),
-  h: () => toggleChrome(),
   t: () => cycleForm(),
 };
 
@@ -85,8 +84,9 @@ function onKeydown(e) {
 
   const key = e.key.toLowerCase();
   const fn = SHORTCUTS[key];
-  // 'h' stays live while locked: hiding the header must never be a one-way door.
-  if (!fn || (!state.unlocked && key !== 'h')) return;
+  // H (chrome) is the NeoKeys kit's now, on its own listener, so it stays
+  // live while locked without an exemption here.
+  if (!fn || !state.unlocked) return;
   e.preventDefault();
   fn();
 }

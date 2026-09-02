@@ -17,7 +17,6 @@ export const DEFAULT_SETTINGS = {
   motion: 'auto',   // auto (follow the OS) | full | reduced | off
   sound: false,
   attract: true,
-  chrome: true,      // header bar visible
 };
 
 export const state = {

@@ -5,7 +5,7 @@
 // disappears into.
 
 import { state, save, DEFAULT_SETTINGS } from './state.js';
-import { applyAccent, applyFx, resolveMotion, applyChrome } from './theme.js';
+import { applyAccent, applyFx, resolveMotion } from './theme.js';
 import { PRESETS } from './layout.js';
 import { $, hexToRgb, rgbToHsl, hslToRgb, rgbToHex, clamp, showToast } from './utils.js';
 import { syncFx } from './fx.js';
@@ -58,10 +58,14 @@ function renderChips(el, items, active, attr) {
 function renderSwitches() {
   const el = $('fxSwitches');
   if (!el) return;
-  el.innerHTML = FX_TOGGLES.map(({ key, label }) => `
-    <button type="button" class="switch" data-fx="${key}" aria-pressed="${!!state.settings[key]}">
+  el.innerHTML = FX_TOGGLES.map(({ key, label }) => {
+    // Chrome is kit state (NeoKeys owns H and the cookie), not a setting.
+    const on = key === 'chrome' ? !window.NeoKeys?.chrome.isHidden() : !!state.settings[key];
+    return `
+    <button type="button" class="switch" data-fx="${key}" aria-pressed="${on}">
       <span>${label}</span><span class="switch__led"></span>
-    </button>`).join('');
+    </button>`;
+  }).join('');
 }
 
 function renderMotionNote() {
@@ -159,21 +163,11 @@ export function isPanelOpen() { return panelOpen; }
 
 export function togglePanel() { isPanelOpen() ? closePanel() : openPanel(); }
 
-/**
- * Hide the header for a full-height frame. The toast is not decoration: with
- * the bar gone the button that brought it back is gone too, so the shortcut
- * has to be stated at the moment it becomes the only way back.
- */
-export function toggleChrome() {
-  state.settings.chrome = !state.settings.chrome;
-  save(state);
-  applyChrome(state.settings.chrome);
-  renderPanel();
-  if (!state.settings.chrome) showToast('Chrome hidden. Press H to bring it back.');
-}
-
 export function initPanel() {
   renderPanel();
+  // The kit's H (or its cookie restore) moves chrome state under the drawer's
+  // feet; repaint so the switch never lies about what is on screen.
+  document.addEventListener('neo-chrome', () => renderPanel());
 
   $('panelClose')?.addEventListener('click', closePanel);
   $('panelReset')?.addEventListener('click', resetSettings);
@@ -202,6 +196,11 @@ export function initPanel() {
   $('fxSwitches')?.addEventListener('click', (e) => {
     const key = e.target.closest?.('[data-fx]')?.dataset.fx;
     if (!key) return;
+    if (key === 'chrome') {
+      // Kit-owned: toggling writes the cookie and toasts; neo-chrome repaints.
+      window.NeoKeys?.chrome.toggle();
+      return;
+    }
     state.settings[key] = !state.settings[key];
     commit();
   });
